@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "Zephyr",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "includePath": [
+                "${workspaceFolder}/src/**"
+            ],
+            "forcedInclude": [
+                "${workspaceFolder}/build/zephyr/include/generated/autoconf.h",
+                "${workspaceFolder}/.vscode/c_cpp_undef.h"
+            ],
+            "compileCommands": "build/compile_commands.json"
+        }
+    ],
+    "version": 4
+}
