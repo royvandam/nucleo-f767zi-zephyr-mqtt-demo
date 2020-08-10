@@ -5,7 +5,7 @@
 #include <random/rand32.h>
 
 #include <logging/log.h>
-LOG_MODULE_REGISTER(mqtt_service, LOG_LEVEL_DBG);
+LOG_MODULE_REGISTER(mqtt_service, LOG_LEVEL_INF);
 
 #define NULL_PARAM_CHECK(param) \
 	do { \

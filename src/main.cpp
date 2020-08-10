@@ -36,7 +36,7 @@ static GPIO::Input sw[] = {
 };
 
 // MQTT client
-#define MQTT_CLIENTID           "fancom:pcu:42"
+#define MQTT_CLIENTID           "pcu:42"
 
 // MQTT broker address information
 #define MQTT_BROKER_ADDR        "10.0.0.131"
@@ -47,10 +47,10 @@ static GPIO::Input sw[] = {
 // #define MQTT_TOPIC_DEV_UUID "378cac49-a79e-4634-b343-7057a7878f03"
 #define MQTT_TOPIC_UUID "42"
 #define MQTT_TOPIC_PREFIX   "dev/" MQTT_TOPIC_DEVICE "/uuid/" MQTT_TOPIC_UUID
-#define MQTT_TOPIC_LED_0    MQTT_TOPIC_PREFIX "/out/led[0]"
-#define MQTT_TOPIC_LED_1    MQTT_TOPIC_PREFIX "/out/led[1]"
-#define MQTT_TOPIC_LED_2    MQTT_TOPIC_PREFIX "/out/led[2]"
-#define MQTT_TOPIC_SW_0     MQTT_TOPIC_PREFIX "/in/sw[0]"
+#define MQTT_TOPIC_LED_0    MQTT_TOPIC_PREFIX "/out/led/0"
+#define MQTT_TOPIC_LED_1    MQTT_TOPIC_PREFIX "/out/led/1"
+#define MQTT_TOPIC_LED_2    MQTT_TOPIC_PREFIX "/out/led/2"
+#define MQTT_TOPIC_SW_0     MQTT_TOPIC_PREFIX "/in/sw/0"
 
 static mqtt_service_t mqtt_service;
 
@@ -102,7 +102,7 @@ void main(void) {
     mqtt_service_subscribe(&mqtt_service, MQTT_TOPIC_LED_1, MQTT_QOS_0_AT_MOST_ONCE, &initial_value, sizeof(initial_value));
     mqtt_service_subscribe(&mqtt_service, MQTT_TOPIC_LED_2, MQTT_QOS_0_AT_MOST_ONCE, &initial_value, sizeof(initial_value));
 
-    sw[0].set_interrupt(GPIO_INT_EDGE_BOTH);
+    sw[0].set_interrupt(GPIO_INT_EDGE_BOTH | GPIO_INT_DEBOUNCE);
     sw[0].set_interrupt_handler([](GPIO::Input&, int value) {
         char strbuf[2];
         snprintf(strbuf, sizeof(strbuf), "%d", value);
