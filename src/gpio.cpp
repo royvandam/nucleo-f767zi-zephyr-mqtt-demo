@@ -52,15 +52,43 @@ Input::Input(struct device* dev, gpio_pin_t pin)
     : Pin(dev, pin, GPIO_INPUT)
 {}
 
-// void
-// Input::set_interrupt_mode(gpio_int_mode mode) {
-//     int ret = gpio_pin_interrupt_configure(_dev, _pin, mode);
-//     __ASSERT(ret != 0, "Error %d: failed to configure GPIO pin interrupt");
-// }
+void
+Input::set_interrupt(gpio_flags_t mode) {
+    int ret = gpio_pin_interrupt_configure(_dev, _pin, mode);
+    assert(ret == 0);
+}
 
-// void
-// Input::set_interrupt_handle(std::function<void(int)> callback) {
+void
+Input::set_interrupt_handler(InterruptHandler handler) {
+    _interrupt_handler = handler;
+    _interrupt_callback.context = this;
+    auto cb = reinterpret_cast<gpio_callback*>(&_interrupt_callback.base);
+    gpio_init_callback(cb, Input::_raw_interrupt_handler, BIT(this->_pin));
+	gpio_add_callback(this->_dev, cb);
+}
 
-// }
+void
+Input::clear_interrupt_handler() {
+    if (_interrupt_handler) {
+        auto cb = reinterpret_cast<gpio_callback*>(&_interrupt_callback.base);
+        gpio_remove_callback(this->_dev, cb);
+        _interrupt_handler = nullptr;
+    }
+}
+
+void Input::_base_interrupt_handler() {
+    if (_interrupt_handler) {
+        _interrupt_handler(*this, get());
+    }
+}
+
+void
+Input::_raw_interrupt_handler(struct device *dev __unused,
+    struct gpio_callback *cb, uint32_t pin __unused)
+{
+    auto self = reinterpret_cast<Input*>(
+        reinterpret_cast<Input::InterruptCallback*>(cb)->context);
+    self->_base_interrupt_handler();
+}
 
 } // namespace GPIO

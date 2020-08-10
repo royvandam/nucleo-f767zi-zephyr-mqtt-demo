@@ -43,11 +43,21 @@ class Input
 public:
     Input(struct device* dev, gpio_pin_t pin);
 
-//     void set_interrupt_mode(gpio_int_mode mode);
-//     void set_interrupt_handle(std::function<void(int)> callback);
+    using InterruptHandler = std::function<void(Input&, int)>;
+    void set_interrupt(gpio_flags_t mode);
+    void set_interrupt_handler(InterruptHandler handler);
+    void clear_interrupt_handler();
 
-// protected:
-//     struct gpio_callback _callback;
+protected:
+    struct InterruptCallback {
+        gpio_callback base;
+        void* context;
+    } _interrupt_callback;
+    InterruptHandler _interrupt_handler;
+
+    void _base_interrupt_handler();
+    static void _raw_interrupt_handler(struct device *dev,
+        struct gpio_callback *cb, uint32_t pin);
 };
 
 }
